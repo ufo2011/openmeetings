@@ -49,6 +49,7 @@ import org.apache.openmeetings.db.dao.label.LabelDao;
 import org.apache.openmeetings.db.dao.server.SOAPLoginDao;
 import org.apache.openmeetings.db.dao.user.GroupDao;
 import org.apache.openmeetings.db.dao.user.IUserManager;
+import org.apache.openmeetings.db.dao.user.UserDao;
 import org.apache.openmeetings.db.dto.basic.ServiceResult;
 import org.apache.openmeetings.db.dto.basic.ServiceResult.Type;
 import org.apache.openmeetings.db.dto.room.RoomOptionsDTO;
@@ -116,7 +117,7 @@ public class UserWebService extends BaseWebService {
 	 * @return - {@link ServiceResult} with error code or SID and userId
 	 */
 	@WebMethod
-	@GET
+	@POST
 	@Path("/login")
 	@Operation(
 			description = "Login and create sessionId required for sub-sequent calls",
@@ -127,12 +128,13 @@ public class UserWebService extends BaseWebService {
 			}
 		)
 	public ServiceResult login(
-			@Parameter(required = true, description = "login or email of Openmeetings user with admin or SOAP-rights") @WebParam(name="user") @QueryParam("user") String user
-			, @Parameter(required = true, description = "password") @WebParam(name="pass") @QueryParam("pass") String pass) {
+			@Parameter(required = true, description = "login or email of Openmeetings user with admin or SOAP-rights") @WebParam(name="user") @FormParam("user") String user
+			, @Parameter(required = true, description = "password") @WebParam(name="pass") @FormParam("pass") String pass) {
 		try {
 			log.debug("Login user");
 			User u = userDao.login(user, pass);
 			if (u == null) {
+				UserDao.badPwdPenalty();
 				return new ServiceResult("error.bad.credentials", Type.ERROR);
 			}
 

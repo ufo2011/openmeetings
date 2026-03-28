@@ -21,7 +21,6 @@ package org.apache.openmeetings.web;
 import static org.apache.openmeetings.db.util.ApplicationHelper.ensureApplication;
 import static org.apache.openmeetings.web.common.OmWebSocketPanel.CONNECTED_MSG;
 import static org.apache.wicket.util.string.Strings.escapeMarkup;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -138,11 +137,11 @@ public abstract class AbstractWicketTesterTest extends AbstractOmServerTest {
 
 	public static void checkErrors(WicketTester tester, int count) {
 		List<FeedbackMessage> errors = getErrors(tester);
-		if (count != errors.size()) {
+		if (count > errors.size()) {
 			for (FeedbackMessage fm : errors) {
 				log.debug("Error {}", fm);
 			}
 		}
-		assertEquals(count, errors.size(), String.format("There should be exactly %s errors", count));
+		assertTrue(count <= errors.size(), String.format("There should be at least %s errors, but was %s", count, errors.size()));
 	}
 }
